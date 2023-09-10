@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+
 public class DuckSimulator {
     public static void main(String[] args) {
         DuckSimulator simulator = new DuckSimulator();
@@ -5,21 +8,43 @@ public class DuckSimulator {
     }
 
     void simulate() {
-        Quackable mallard = new QuackCounter(new QuackEcho(new MallardDuck()));
-        Quackable redhead = new QuackCounter(new QuackEcho(new RedHeadDuck()));
-        Quackable duck = new QuackCounter(new QuackEcho(new DuckCall()));
-        Quackable rubber = new QuackCounter(new QuackEcho(new RubberDuck()));
-        Quackable goose = new QuackCounter(new QuackEcho(new GooseAdapter(new Goose())));
-
         System.out.println("\nDuck Simulator");
-        simulate(mallard);
-        simulate(redhead);
-        simulate(duck);
-        simulate(rubber);
-        simulate(goose);
+        AbstractDuckFactory duckFactory = new DuckFactory();
+        simulate(duckFactory);
+
+        System.out.println("=============");
+        AbstractDuckFactory countingDuckFactory = new CountingDuckFactory();
+        simulate(countingDuckFactory);
+        System.out.println(QuackCounter.getQuacks());
+
+        System.out.println("=============");
+        AbstractDuckFactory countingEchoDuckFactory = new CountingEchoDuckFactory();
+        simulate(countingEchoDuckFactory);
+        System.out.println(QuackCounter.getQuacks());
+
+        System.out.println("=============");
+        Flock flock = new Flock();
+        flock.add(new RedHeadDuck());
+        flock.add(new MallardDuck());
+        flock.add(new PigeonAdapter(new Pigeon()));
+        flock.add(new GooseAdapter(new Goose()));
+        flock.quack();
+
+    }
+
+    void simulate(AbstractDuckFactory abstractDuckFactory){
+        Quackable mallardDuck = abstractDuckFactory.createMallardDuck();
+        Quackable redheadDuck = abstractDuckFactory.createRedheadDuck();
+        Quackable duckCall = abstractDuckFactory.createDuckCall();
+        Quackable rubberDuck = abstractDuckFactory.createRubberDuck();
+        simulate(mallardDuck); /* Quack */
+        simulate(redheadDuck); /* Quack */
+        simulate(duckCall); /* Kwak */
+        simulate(rubberDuck); /* Squeak */
     }
 
     void simulate(Quackable duck) {
         duck.quack();
     }
+
 }
